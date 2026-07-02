@@ -123,8 +123,8 @@ export default function ShareView() {
   const nav = (dir) => { const n = idx + dir; if (n >= 0 && n < files.length) setLightbox(files[n]); };
 
   return (
-    <div className={`min-h-screen flex flex-col ${light ? "sa-light" : ""}`} style={{ background: "var(--sa-bg)", color: "var(--sa-text)" }} data-testid="share-view">
-      <header className="sticky top-0 z-30 border-b" style={{ borderColor: "var(--sa-border)", background: light ? "rgba(255,255,255,0.8)" : "rgba(10,10,11,0.7)", backdropFilter: "blur(14px)" }}>
+    <div className={`min-h-screen flex flex-col ${light ? "theme-light" : "theme-dark"}`} style={{ background: "var(--sa-bg)", color: "var(--sa-text)" }} data-testid="share-view">
+      <header className="sticky top-0 z-30 border-b" style={{ borderColor: "var(--sa-border)", background: "var(--sa-header-bg)", backdropFilter: "blur(14px)" }}>
         <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {data.tenant?.logo_url && <img src={data.tenant.logo_url} alt="logo" className="h-8 object-contain" />}

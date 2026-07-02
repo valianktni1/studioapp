@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LayoutGrid, Settings, LogOut, Activity } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function AdminShell({ children }) {
   const { tenant, admin, logout } = useAuth();
@@ -23,7 +24,7 @@ export default function AdminShell({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--sa-bg)" }}>
-      <header className="sticky top-0 z-40 border-b" style={{ borderColor: "var(--sa-border)", background: "rgba(10,10,11,0.7)", backdropFilter: "blur(16px)" }}>
+      <header className="sticky top-0 z-40 border-b" style={{ borderColor: "var(--sa-border)", background: "var(--sa-header-bg)", backdropFilter: "blur(16px)" }}>
         <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {tenant?.logo_url
@@ -36,6 +37,7 @@ export default function AdminShell({ children }) {
           </div>
           <div className="flex items-center gap-3">
             {admin?.impersonated && <span className="text-xs px-2 py-1 rounded" style={{ background: "rgba(212,175,55,0.15)", color: accent }}>Impersonating</span>}
+            <ThemeToggle />
             <button className="sa-btn-ghost !py-2" onClick={() => { logout(); nav("/login"); }} data-testid="admin-logout"><LogOut size={15} /> Sign out</button>
           </div>
         </div>

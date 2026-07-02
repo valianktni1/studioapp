@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { LogOut, Plus, Ban, Play, Trash2, UserCog, Users, DollarSign, HardDrive } from "lucide-react";
 import { superApi, SUPER_TOKEN_KEY, TENANT_TOKEN_KEY, formatBytes, apiError } from "@/lib/api";
 import Footer from "@/components/Footer";
+import ThemeToggle from "@/components/ThemeToggle";
 
 function StatCard({ icon: Icon, label, value, tint }) {
   return (
@@ -84,7 +85,10 @@ export default function SuperAdminDashboard() {
             <span className="font-display text-2xl font-bold" style={{ color: "var(--sa-gold)" }}>StudioApp</span>
             <span className="sa-label">Super Admin Console</span>
           </div>
-          <button className="sa-btn-ghost" onClick={logout} data-testid="super-logout"><LogOut size={16} /> Sign out</button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button className="sa-btn-ghost" onClick={logout} data-testid="super-logout"><LogOut size={16} /> Sign out</button>
+          </div>
         </div>
       </header>
 

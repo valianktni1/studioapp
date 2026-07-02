@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 import Landing from "@/pages/Landing";
 import AdminLogin from "@/pages/AdminLogin";
@@ -27,22 +28,24 @@ function App() {
   return (
     <div className="App">
       <Toaster theme="dark" position="top-right" richColors />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<AdminLogin />} />
-            <Route path="/onboarding" element={<TenantOnboarding />} />
-            <Route path="/admin" element={<Protected><AdminDashboard /></Protected>} />
-            <Route path="/admin/gallery/:id" element={<Protected><AdminGalleryDetail /></Protected>} />
-            <Route path="/admin/settings" element={<Protected><AdminSettings /></Protected>} />
-            <Route path="/super-admin" element={<SuperAdminLogin />} />
-            <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
-            <Route path="/s/:token" element={<ShareView />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+      <ThemeProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<AdminLogin />} />
+              <Route path="/onboarding" element={<TenantOnboarding />} />
+              <Route path="/admin" element={<Protected><AdminDashboard /></Protected>} />
+              <Route path="/admin/gallery/:id" element={<Protected><AdminGalleryDetail /></Protected>} />
+              <Route path="/admin/settings" element={<Protected><AdminSettings /></Protected>} />
+              <Route path="/super-admin" element={<SuperAdminLogin />} />
+              <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+              <Route path="/s/:token" element={<ShareView />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Camera, ShieldCheck, HardDrive, Share2, Video, Sparkles, ArrowRight } from "lucide-react";
 import Footer from "@/components/Footer";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const HERO = "https://images.pexels.com/photos/11813966/pexels-photo-11813966.jpeg";
 
@@ -18,10 +19,11 @@ const features = [
 export default function Landing() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--sa-bg)" }}>
-      <header className="sticky top-0 z-40" style={{ background: "rgba(10,10,11,0.6)", backdropFilter: "blur(18px)", borderBottom: "1px solid var(--sa-border)" }}>
+      <header className="sticky top-0 z-40" style={{ background: "var(--sa-header-bg)", backdropFilter: "blur(18px)", borderBottom: "1px solid var(--sa-border)" }}>
         <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 flex items-center justify-between">
           <span className="font-display text-2xl font-bold tracking-tight" style={{ color: "var(--sa-gold)" }} data-testid="brand-logo">StudioApp</span>
           <nav className="flex items-center gap-3">
+            <ThemeToggle />
             <Link to="/login" className="sa-btn-ghost" data-testid="nav-login">Photographer Login</Link>
             <a href="#pricing" className="sa-btn" data-testid="nav-pricing">View Plans</a>
           </nav>
@@ -32,18 +34,18 @@ export default function Landing() {
         <img src={HERO} alt="studio" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(10,10,11,0.55) 0%, rgba(10,10,11,0.85) 70%, var(--sa-bg) 100%)" }} />
         <div className="relative max-w-7xl mx-auto px-6 sm:px-10 py-32 sm:py-44">
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="sa-label mb-5">The gallery platform for wedding photographers</motion.p>
+          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="sa-label mb-5" style={{ color: "rgba(255,255,255,0.7)" }}>The gallery platform for wedding photographers</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
-            className="font-display font-bold leading-none tracking-tight text-5xl sm:text-7xl max-w-4xl" style={{ color: "var(--sa-text)" }}>
+            className="font-display font-bold leading-none tracking-tight text-5xl sm:text-7xl max-w-4xl" style={{ color: "#FAFAFA" }}>
             Deliver breathtaking galleries under your own name.
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}
-            className="mt-6 text-lg max-w-2xl" style={{ color: "var(--sa-muted)" }}>
+            className="mt-6 text-lg max-w-2xl" style={{ color: "rgba(255,255,255,0.82)" }}>
             StudioApp is the white-label home for your wedding photography &mdash; branded client galleries, video, backups and print orders, all in one elegant place.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }} className="mt-9 flex flex-wrap gap-4">
             <a href="#pricing" className="sa-btn" data-testid="hero-cta">Start your studio <ArrowRight size={18} /></a>
-            <Link to="/login" className="sa-btn-ghost" data-testid="hero-login">I already have an account</Link>
+            <Link to="/login" className="sa-btn-ghost" style={{ color: "#fff", borderColor: "rgba(255,255,255,0.5)" }} data-testid="hero-login">I already have an account</Link>
           </motion.div>
         </div>
       </section>
