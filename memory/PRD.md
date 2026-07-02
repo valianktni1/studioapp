@@ -16,28 +16,28 @@ Turn a single-tenant wedding photography gallery system into a **multi-tenant Sa
 
 ## Implemented (2026-07-02)
 - Multi-tier JWT auth (bcrypt): super admin + tenant admin, impersonation, suspend gate.
-- Super Admin dashboard: list/create/suspend/unsuspend/delete tenants, overview (count/active/MRR/storage), impersonate.
+- Super Admin dashboard: list/create/suspend/unsuspend/delete tenants, overview (count/active/MRR/galleries), impersonate; table shows Galleries (used/limit) + Subdomain.
 - Tenant onboarding wizard (business, logo URL, brand colours) + branding/password settings.
-- Galleries: CRUD, default subfolders, templates, subfolder cover, delete subfolder.
-- File uploads (multipart) with storage-quota enforcement (413), background thumbnail + preview generation (separate 8-worker thumb pool / 2-worker transcode pool retained).
+- Galleries: CRUD, default subfolders, templates, subfolder cover, delete subfolder. **Gallery-count limit enforced (402) per plan.**
+- File uploads with background thumbnail + preview generation (separate 8/2 worker pools).
 - Media serving: thumb/preview/original (public by gallery_id UUID capability — MVP).
-- Share links: create/list/toggle/delete, password (bcrypt), access levels, expiry, custom slug, guest-upload mode; password-gated downloads via signed grant token.
-- Public ShareView: branding, password gate, subfolder tabs, grid + lightbox, favourites + submit, Download All (ZIP), guest uploads, 30s heartbeat, dark/light toggle, album instruction cards, watermark overlay.
-- Dashboard stats (5 cards), Live Gallery Visitors panel, activity logging.
-- Per-tenant branding throughout; "Site Designed & Hosted by StudioApp" footer everywhere.
-- Seeded: superadmin + demo tenant. Tested: 29/29 backend pytest + frontend E2E pass.
+- Share links: create/list/toggle/delete, password (bcrypt), access levels, expiry, guest-upload; **auto vanity slug from couple name/date**; password-gated downloads via signed grant.
+- Public ShareView: branding, password gate, subfolder tabs, grid + lightbox, favourites + submit, Download All (ZIP), guest uploads, 30s heartbeat, dark/light, album instructions, watermark.
+- Dashboard stats (5 cards) + gallery-usage bar, Live Visitors, activity logging.
+- Per-tenant branding + "Site Designed & Hosted by StudioApp" footer everywhere.
+- **Pricing model = number of galleries: Starter £15/10, Professional £35/30, Studio £65/60.**
+- **Stripe subscription checkout (Settings > Billing) via emergentintegrations, webhook + status polling, auto-upgrades plan on paid.** Tested returning real checkout.stripe.com URLs.
+- **Per-tenant subdomain slug ({subdomain}.studio-app.uk) + public resolve endpoint /api/public/tenant/{subdomain}.**
+- Landing: wedding hero image + "Built by a Wedding Photographer for Photographers" section.
+- Tests: iteration_2 41/41 backend + frontend flows pass.
 
 ## DEFERRED / Backlog (not yet built)
-- P0: Stripe subscription billing + webhooks + auto-suspend on failed payment.
-- P0: Video transcoding (FFmpeg + VAAPI GPU/CPU fallback), transcode progress, ensure_faststart. (No ffmpeg/GPU in preview env.)
-- P0: NGINX video container + secure_link signed URLs + entrypoint.sh (deployment artifact).
-- P1: SMTP per-tenant (notify couple, broadcast, templates, expiry reminders, email log, awards badge). formataddr() From header required.
-- P1: TOTP 2FA (pyotp) setup/enable/disable.
-- P1: QR code PDFs (3 designs), print sizes + orders + PayPal.
-- P1: Chunked 40GB+ uploads; backup system + backup-aware delete UI.
-- P1: Activity auto-archive (6mo), archive tab, email log tab, slideshow (Ken Burns + audio).
-- P2: Docker Compose (4 containers) + TrueNAS mount paths, logo file upload (object storage).
-- Security: gate /api/media/* behind share token / admin auth before production.
+- P0: **PayPal payments** (awaiting user credentials — subscriptions and/or print orders).
+- P0: Real subdomain wildcard routing (needs *.studio-app.uk DNS + NPM + wildcard SSL; app resolves tenant from Host header — logic ready, can't demo in single-host preview).
+- P0: Video transcoding (FFmpeg + VAAPI GPU/CPU fallback) + NGINX secure_link (no ffmpeg/GPU in preview).
+- P1: SMTP per-tenant email suite, TOTP 2FA, QR PDFs, print sizes/orders, chunked 40GB uploads, backups, activity archive, slideshow.
+- P2: Docker Compose + TrueNAS mounts, logo file upload to object storage.
+- Security notes: gate /api/media/* before prod; set PUBLIC_BASE_URL for Stripe webhook; consider per-tenant share slug once subdomain routing is live.
 
 ## Next Tasks
 1. Confirm scope/priority with user (billing vs email vs video first).
