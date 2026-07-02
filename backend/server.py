@@ -1,89 +1,100 @@
-from fastapi import FastAPI, APIRouter
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
-import logging
-from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
 import uuid
+import logging
 from datetime import datetime, timezone
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
+from db import db, PLANS
+from auth_utils import hash_password, verify_password
+from routes import super_admin, tenant_auth, galleries, shares, public_share
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("studioapp")
+
+app = FastAPI(title="StudioApp")
 
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
-
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
-
-# Create the main app without a prefix
-app = FastAPI()
-
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
-
-
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
+@app.get("/api/")
 async def root():
-    return {"message": "Hello World"}
+    return {"app": "StudioApp", "status": "ok"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@app.get("/api/health")
+async def health():
+    return {"status": "healthy"}
 
-# Include the router in the main app
-app.include_router(api_router)
+
+app.include_router(super_admin.router)
+app.include_router(tenant_auth.router)
+app.include_router(galleries.router)
+app.include_router(shares.router)
+app.include_router(public_share.router)
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=os.environ.get("CORS_ORIGINS", "*").split(","),
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
+
+
+async def seed_super_admin():
+    username = os.environ["SUPER_ADMIN_USERNAME"]
+    password = os.environ["SUPER_ADMIN_PASSWORD"]
+    existing = await db.super_admins.find_one({"username": username})
+    if not existing:
+        await db.super_admins.insert_one({
+            "id": str(uuid.uuid4()), "username": username,
+            "password_hash": hash_password(password), "created_at": now_iso()})
+        logger.info("Seeded super admin: %s", username)
+    elif not verify_password(password, existing["password_hash"]):
+        await db.super_admins.update_one({"username": username},
+                                         {"$set": {"password_hash": hash_password(password)}})
+
+
+async def seed_demo_tenant():
+    email = "demo@studioapp.uk"
+    if await db.admins.find_one({"email": email}):
+        return
+    tenant_id = str(uuid.uuid4())
+    await db.tenants.insert_one({
+        "id": tenant_id, "business_name": "Demo Studio", "email": email,
+        "logo_url": None, "accent_color": "#D4AF37", "secondary_color": "#0A0A0B",
+        "phone": None, "website": None, "plan": "pro",
+        "storage_limit_bytes": PLANS["pro"]["storage_limit_bytes"], "storage_used_bytes": 0,
+        "subscription_status": "active", "stripe_customer_id": None, "stripe_subscription_id": None,
+        "suspended": False, "onboarding_complete": True, "created_at": now_iso()})
+    await db.admins.insert_one({
+        "id": str(uuid.uuid4()), "tenant_id": tenant_id, "email": email,
+        "password_hash": hash_password("Demo!2026"), "totp_secret": None,
+        "totp_enabled": False, "created_at": now_iso()})
+    logger.info("Seeded demo tenant: %s", email)
+
+
+async def create_indexes():
+    await db.super_admins.create_index("username", unique=True)
+    await db.admins.create_index("email", unique=True)
+    await db.tenants.create_index("id", unique=True)
+    await db.galleries.create_index([("tenant_id", 1), ("created_at", -1)])
+    await db.files.create_index([("tenant_id", 1), ("gallery_id", 1)])
+    await db.files.create_index([("gallery_id", 1), ("filename", 1)])
+    await db.shares.create_index("token")
+    await db.shares.create_index("custom_slug")
+
+
+@app.on_event("startup")
+async def startup():
+    await create_indexes()
+    await seed_super_admin()
+    await seed_demo_tenant()
+
 
 @app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+async def shutdown():
+    pass

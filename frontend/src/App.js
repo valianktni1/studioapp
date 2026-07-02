@@ -1,53 +1,47 @@
-import { useEffect } from "react";
+import React from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "sonner";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import Landing from "@/pages/Landing";
+import AdminLogin from "@/pages/AdminLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
+import AdminGalleryDetail from "@/pages/AdminGalleryDetail";
+import AdminSettings from "@/pages/AdminSettings";
+import TenantOnboarding from "@/pages/TenantOnboarding";
+import SuperAdminLogin from "@/pages/SuperAdminLogin";
+import SuperAdminDashboard from "@/pages/SuperAdminDashboard";
+import ShareView from "@/pages/ShareView";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+function Protected({ children }) {
+  const { loading, admin, tenant } = useAuth();
+  if (loading)
+    return <div className="min-h-screen flex items-center justify-center text-zinc-500">Loading…</div>;
+  if (!admin) return <Navigate to="/login" replace />;
+  if (tenant && !tenant.onboarding_complete) return <Navigate to="/onboarding" replace />;
+  return children;
+}
 
 function App() {
   return (
     <div className="App">
+      <Toaster theme="dark" position="top-right" richColors />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<AdminLogin />} />
+            <Route path="/onboarding" element={<TenantOnboarding />} />
+            <Route path="/admin" element={<Protected><AdminDashboard /></Protected>} />
+            <Route path="/admin/gallery/:id" element={<Protected><AdminGalleryDetail /></Protected>} />
+            <Route path="/admin/settings" element={<Protected><AdminSettings /></Protected>} />
+            <Route path="/super-admin" element={<SuperAdminLogin />} />
+            <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+            <Route path="/s/:token" element={<ShareView />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </div>
   );

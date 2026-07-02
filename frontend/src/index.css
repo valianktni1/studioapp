@@ -1,115 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --sa-bg: #0A0A0B;
+  --sa-surface: #121214;
+  --sa-surface-2: #1A1A1D;
+  --sa-border: rgba(255,255,255,0.08);
+  --sa-gold: #D4AF37;
+  --sa-text: #FAFAFA;
+  --sa-muted: #A1A1AA;
+}
+
+* { box-sizing: border-box; }
+
 body {
-    margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  background: var(--sa-bg);
+  color: var(--sa-text);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-code {
-    font-family:
-        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+.font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+.sa-label { text-transform: uppercase; letter-spacing: 0.22em; font-size: 0.7rem; font-weight: 600; color: var(--sa-muted); }
+
+.sa-input {
+  width: 100%;
+  background: #0A0A0B;
+  border: 1px solid var(--sa-border);
+  color: var(--sa-text);
+  padding: 0.7rem 0.9rem;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color .25s ease, box-shadow .25s ease;
+  font-size: 0.95rem;
+}
+.sa-input:focus { border-color: var(--sa-gold); box-shadow: 0 0 0 1px var(--sa-gold); }
+
+.sa-card {
+  background: var(--sa-surface);
+  border: 1px solid var(--sa-border);
+  border-radius: 4px;
+  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+.sa-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); box-shadow: 0 20px 50px -20px rgba(0,0,0,0.8); }
+
+.sa-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  background: var(--sa-gold); color: #0A0A0B; font-weight: 700;
+  padding: 0.7rem 1.4rem; border-radius: 4px; border: none; cursor: pointer;
+  transition: background-color .25s ease, transform .15s ease; letter-spacing: .02em;
+}
+.sa-btn:hover { background: #E5C55A; }
+.sa-btn:active { transform: scale(.98); }
+.sa-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.sa-btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  background: transparent; color: var(--sa-text); font-weight: 600;
+  padding: 0.65rem 1.3rem; border-radius: 4px; border: 1px solid var(--sa-border);
+  cursor: pointer; transition: all .25s ease;
+}
+.sa-btn-ghost:hover { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.04); }
+
+.studio-footer {
+  text-align: center; padding: 1.5rem; font-size: .8rem; color: var(--sa-muted);
+  border-top: 1px solid var(--sa-border); letter-spacing: .04em;
 }
 
-@layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
-}
+.progressive-img { filter: blur(0); transition: filter .5s ease, opacity .5s ease; }
+.progressive-img.loading { filter: blur(14px); }
 
-@layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
-}
+::selection { background: var(--sa-gold); color: #0A0A0B; }
 
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
+/* light theme for share view */
+.sa-light { --sa-bg:#F7F5F1; --sa-surface:#FFFFFF; --sa-surface-2:#F0EDE7; --sa-border:rgba(0,0,0,0.1); --sa-text:#1A1A1A; --sa-muted:#6b6b6b; background:var(--sa-bg); color:var(--sa-text); }
 
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
-    }
-}
+@keyframes sa-pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+.sa-pulse { animation: sa-pulse 1.6s ease-in-out infinite; }

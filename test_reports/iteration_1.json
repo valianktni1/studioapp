@@ -1,0 +1,38 @@
+{
+  "summary": "Comprehensive backend + frontend testing of StudioApp MVP. 29/29 pytest cases pass. Frontend E2E flow verified: super-admin login, tenant login, gallery creation, image upload with thumbnail generation, share link creation, and public ShareView with favourites/download-all all functional.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "media.generate_image_derivatives", "issue": "Pillow throws 'OSError: broken data stream' on very tiny (1x1) PNGs. The background thumb executor silently swallows the exception (except Exception: return False) so 'has_thumb' never flips. Not a real-world issue (real photos > 100px work fine) but suggest logging the exception so failed derivatives are debuggable."},
+      {"endpoint": "/api/media/thumb, /api/media/preview, /api/media/original", "issue": "Media served publicly by gallery_id UUID with no auth (intentional per handoff notes for MVP). Should be revisited before production because knowing/guessing UUID leaks originals cross-tenant."},
+      {"endpoint": "/api/admin/dashboard-stats", "issue": "'pending_albums' counts galleries with 0 files in 'Album Favourites'. Newly-created galleries always count as pending. Cosmetic only."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Super Admin Dashboard stats", "issues": ["Large stat digits (STUDIOS=1, ACTIVE=1) render with a very tall/narrow serif '1' that looks slightly clipped on top on some viewports"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/results.xml"],
+  "action_items": [
+    "Consider logging exceptions in media.generate_image_derivatives instead of silently returning False",
+    "For prod: gate /api/media/* endpoints behind share-token or admin-auth (currently public by gallery_id UUID — intentional MVP)"
+  ],
+  "critical_code_review_comments": [
+    "auth_utils._clean should also strip password_hash from tenant docs returned to super admin (list_tenants returns tenants but tenants collection has no password_hash so ok — admins do)",
+    "server.py CORS uses allow_origins='*' with allow_credentials=True which browsers reject silently. If cookie auth is added later, use explicit origins",
+    "routes/galleries.py _thumb_and_mark opens a fresh MongoClient per file; not pooled — fine for MVP but wasteful",
+    "public_share.share_download does not verify password for password-protected shares before download (only /access does). A client that knows the file_id + token can bypass the password gate for downloads. HIGH concern for password-protected galleries",
+    "shares.py does not validate access_level against the allowed set ('view'|'download'|'full') — any string accepted"
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (29/29)", "frontend": "100% (all critical flows pass)"},
+  "test_credentials": "superadmin / Stu!d10App_2026xQ ; demo@studioapp.uk / Demo!2026",
+  "seed_data_creation": "During tests: several 'TEST Gallery ...' galleries + one 'E2E Test Gallery' on demo tenant with a 400x300 PNG. A share token 'VOPtf91E4RvtiA' remains for future E2E frontend re-testing.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend tests live at /app/backend/tests/backend_test.py (pytest, parallel-safe). Run: `cd /app && python -m pytest backend/tests/backend_test.py -v`. E2E share URL for frontend re-test: https://<host>/s/VOPtf91E4RvtiA (from demo tenant, no password, download-enabled).",
+  "rca of the issue": "Only issue encountered was initial test failure on tiny 1x1 PNG upload — Pillow's decoder fails on it and the background thumb generator caught the exception (silent). Fixed test to use a 100x100 PNG. Root-cause suggestion for E1: log the exception in media.generate_image_derivatives so silent-fail edge cases (corrupt / tiny images) surface in logs."
+}
