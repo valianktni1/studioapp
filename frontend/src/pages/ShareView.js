@@ -26,6 +26,7 @@ export default function ShareView() {
   const [active, setActive] = useState(null);
   const [favs, setFavs] = useState({});
   const [favCount, setFavCount] = useState(0);
+  const [grant, setGrant] = useState("");
   const [lightbox, setLightbox] = useState(null);
   const [light, setLight] = useState(false);
   const guestInput = useRef();
@@ -44,6 +45,7 @@ export default function ShareView() {
     setData(d);
     setActive((a) => a || d.subfolders[0]);
     setFavCount(d.favourites_count || 0);
+    setGrant(d.grant || "");
   };
 
   const loadFiles = async (pw) => {
@@ -78,11 +80,11 @@ export default function ShareView() {
     catch (err) { toast.error(apiError(err)); }
   };
 
-  const downloadFile = (f) => { window.open(`${API}/share/${token}/download/${f.id}`, "_blank"); };
+  const downloadFile = (f) => { window.open(`${API}/share/${token}/download/${f.id}?grant=${encodeURIComponent(grant)}`, "_blank"); };
   const downloadAll = async () => {
     toast.info("Preparing ZIP…");
     try {
-      const res = await pub.post(`/share/${token}/download-zip`, {}, { responseType: "blob" });
+      const res = await pub.post(`/share/${token}/download-zip`, { grant }, { responseType: "blob" });
       const url = URL.createObjectURL(res.data);
       const a = document.createElement("a"); a.href = url; a.download = `${brand}.zip`; a.click(); URL.revokeObjectURL(url);
     } catch (err) { toast.error(apiError(err)); }

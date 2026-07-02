@@ -68,7 +68,9 @@ def generate_image_derivatives(gallery_id: str, subfolder_slug: str, filename: s
         _resize_to(src, thumb, THUMB_SIZE, 78)
         _resize_to(src, preview, PREVIEW_SIZE, 85)
         return True
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.getLogger("studioapp").warning("thumb gen failed for %s: %s", filename, e)
         return False
 
 

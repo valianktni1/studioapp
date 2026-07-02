@@ -1,19 +1,44 @@
 import io
 import uuid
 import zipfile
-from datetime import datetime, timezone
+import jwt
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
 from fastapi.responses import FileResponse, StreamingResponse
 
 from db import db
-from auth_utils import verify_password
+from auth_utils import verify_password, get_jwt_secret
 from media import (
     slugify, file_type_for, gallery_dir, cache_dir,
     generate_image_derivatives,
 )
 
 router = APIRouter(prefix="/api", tags=["public-share"])
+
+
+def _issue_grant(token: str) -> str:
+    return jwt.encode(
+        {"t": token, "exp": datetime.now(timezone.utc) + timedelta(hours=24)},
+        get_jwt_secret(), algorithm="HS256")
+
+
+def _grant_valid(token: str, grant: str) -> bool:
+    if not grant:
+        return False
+    try:
+        p = jwt.decode(grant, get_jwt_secret(), algorithms=["HS256"])
+        return p.get("t") == token
+    except jwt.InvalidTokenError:
+        return False
+
+
+async def _require_download_access(s, grant: str = None):
+    """Enforce password gate on downloads for password-protected shares."""
+    if not _access_allows_download(s):
+        raise HTTPException(status_code=403, detail="Downloads are disabled for this gallery")
+    if s.get("has_password") and not _grant_valid(s["token"], grant):
+        raise HTTPException(status_code=401, detail="Unlock the gallery to download")
 
 
 def now_iso():
@@ -84,6 +109,7 @@ async def _files_payload(s, g):
         "guest_upload_mode": s.get("guest_upload_mode", False),
         "tenant": await _tenant_brand(s["tenant_id"]),
         "favourites_count": fav_count,
+        "grant": _issue_grant(s["token"]),
         "files": [clean(f) for f in files],
     }
 
@@ -183,10 +209,9 @@ async def _log_download(s, gname, detail):
 
 
 @router.get("/share/{token}/download/{file_id}")
-async def share_download(token: str, file_id: str):
+async def share_download(token: str, file_id: str, grant: str = None):
     s = await _resolve_share(token)
-    if not _access_allows_download(s):
-        raise HTTPException(status_code=403, detail="Downloads are disabled for this gallery")
+    await _require_download_access(s, grant)
     f = await db.files.find_one({"id": file_id, "gallery_id": s["gallery_id"]})
     if not f:
         raise HTTPException(status_code=404, detail="File not found")
@@ -201,8 +226,8 @@ async def share_download(token: str, file_id: str):
 @router.post("/share/{token}/download-zip")
 async def share_download_zip(token: str, payload: dict = None):
     s = await _resolve_share(token)
-    if not _access_allows_download(s):
-        raise HTTPException(status_code=403, detail="Downloads are disabled for this gallery")
+    grant = (payload or {}).get("grant")
+    await _require_download_access(s, grant)
     g = await db.galleries.find_one({"id": s["gallery_id"]})
     subfolders = [s["subfolder"]] if s.get("subfolder") else g.get("subfolders", [])
     files = await db.files.find(

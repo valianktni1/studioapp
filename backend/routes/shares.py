@@ -24,6 +24,8 @@ def clean(d):
 
 @router.post("/galleries/{gid}/shares")
 async def create_share(gid: str, body: ShareCreate, ctx=Depends(get_current_tenant)):
+    if body.access_level not in ("view", "download", "full"):
+        raise HTTPException(status_code=400, detail="Invalid access level")
     g = await db.galleries.find_one({"id": gid, "tenant_id": ctx["tenant_id"]})
     if not g:
         raise HTTPException(status_code=404, detail="Gallery not found")
