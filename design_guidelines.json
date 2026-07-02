@@ -1,0 +1,109 @@
+{
+  "theme": "dark",
+  "archetype": "5 (Luxury)",
+  "vibe": "Cinematic, architectural, moody, and expensive. The photography spaces are the heroes, so the UI steps back to frame them elegantly.",
+  "typography": {
+    "strategy": "The 'Editorial Future' - Wide Display Sans for character, Geometric Body for legibility.",
+    "heading_font": "Cabinet Grotesk",
+    "body_font": "Satoshi",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tighter leading-none font-bold",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-none font-semibold",
+      "h3": "text-xl sm:text-2xl tracking-tight leading-snug font-medium",
+      "h4": "text-lg sm:text-xl tracking-tight font-medium",
+      "body": "text-base leading-relaxed text-zinc-300",
+      "small_label": "text-xs tracking-[0.2em] uppercase font-semibold text-zinc-500"
+    }
+  },
+  "colors": {
+    "background": {
+      "default": "#0A0A0B",
+      "surface": "#121214",
+      "surface_elevated": "#1A1A1D"
+    },
+    "text": {
+      "primary": "#FAFAFA",
+      "secondary": "#A1A1AA",
+      "muted": "#71717A"
+    },
+    "brand": {
+      "primary": "#E5D0B3",
+      "primary_hover": "#D4BA94",
+      "accent": "#FFFFFF"
+    },
+    "borders": {
+      "subtle": "rgba(255, 255, 255, 0.08)",
+      "focus": "rgba(229, 208, 179, 0.5)"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous Spacing Philosophy. Lots of negative space to give it a gallery feel.",
+    "containers": "max-w-7xl mx-auto px-6 sm:px-12",
+    "section_spacing": "py-24 sm:py-32",
+    "grid_strategy": {
+      "marketing": "grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 (Tetris Grid for asymmetry)",
+      "dashboard": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 (Control Room Grid)"
+    },
+    "border_radius": "rounded-none or rounded-sm (max 4px) for a sharp, architectural look."
+  },
+  "surfaces_and_micro_themes": {
+    "headers": "Crystal Glass: bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-sm",
+    "cards": "Flat solid background (#121214), 1px solid border-white/10, no shadow by default. Hover: -translate-y-1, border-white/20, shadow-2xl shadow-black/50.",
+    "inputs": "bg-[#0A0A0B] border border-white/10 text-white focus:border-[#E5D0B3] focus:ring-1 focus:ring-[#E5D0B3] rounded-sm"
+  },
+  "motion_and_interactions": {
+    "hover_states": "transition-all duration-300 ease-out",
+    "buttons": "hover:bg-[#D4BA94] hover:text-black transition-colors duration-300",
+    "cards_hover": "hover:border-white/30 transition-colors duration-500",
+    "page_transitions": "Fade in with slight upward translation (framer-motion)"
+  },
+  "icons_and_assets": {
+    "library": "lucide-react (sleek, consistent 2px stroke, minimal)",
+    "image_urls": [
+      {
+        "category": "hero_background",
+        "url": "https://images.unsplash.com/photo-1471341971476-ae15ff5dd4ea?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBzdHVkaW8lMjBsaWdodGluZyUyMGRhcmt8ZW58MHx8fHwxNzgzMDA1MTI3fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Camera studio setup with dramatic lighting"
+      },
+      {
+        "category": "studio_gallery_1",
+        "url": "https://images.unsplash.com/photo-1627917932033-74123f070958?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHwzfHxwaG90b2dyYXBoeSUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8fHx8MTc4MzAwNTExOXww&ixlib=rb-4.1.0&q=85",
+        "description": "White framed glass window studio"
+      },
+      {
+        "category": "studio_gallery_2",
+        "url": "https://images.unsplash.com/photo-1634148739677-a5bb54df2611?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHwxfHxwaG90b2dyYXBoeSUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8fHx8MTc4MzAwNTExOXww&ixlib=rb-4.1.0&q=85",
+        "description": "Minimalist chair with black backdrop"
+      },
+      {
+        "category": "studio_gallery_3",
+        "url": "https://images.unsplash.com/photo-1668453814676-c8093305fae6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzV8MHwxfHNlYXJjaHwyfHxwaG90b2dyYXBoeSUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8fHx8MTc4MzAwNTExOXww&ixlib=rb-4.1.0&q=85",
+        "description": "Technical rig and ceiling lighting setup"
+      },
+      {
+        "category": "dashboard_empty_state",
+        "url": "https://images.unsplash.com/photo-1562034475-0292da13283a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBzdHVkaW8lMjBsaWdodGluZyUyMGRhcmt8ZW58MHx8fHwxNzgzMDA1MTI3fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark desk setup with a lamp"
+      }
+    ]
+  },
+  "components": {
+    "shadcn_usage": "Use heavily customized Shadcn components for Forms, Modals, Inputs, DatePicker, Select, and Dashboards. Strip Vercel-look by setting sharp borders (rounded-none or rounded-sm) and dark mode colors.",
+    "buttons": "Solid primary color for primary actions (#E5D0B3 text-black), stark white borders for secondary actions.",
+    "navigation": "Sticky header with Crystal Glass effect. Links must be visible on desktop (no hamburger menu for desktop).",
+    "cards": "Do not overuse standard cards on marketing pages; use purely HTML+Tailwind for asymmetrical bento layouts."
+  },
+  "accessibility": {
+    "contrast": "Ensure text meets APCA standards. Use text-shadow over images. Hover state must explicitly define text color.",
+    "data_testid": "ALL interactive and key informational elements MUST include a data-testid attribute in kebab-case."
+  },
+  "instructions_to_main_agent": [
+    "Use .js or .jsx file extensions for React components. DO NOT use .tsx.",
+    "Implement the 'Luxury' archetype: deep charcoal backgrounds (#0A0A0B) with Champagne accents (#E5D0B3) and stark white text (#FAFAFA).",
+    "The Hero section image must have a max overlay of bg-black/50, or a gradient overlay for text readability without killing the image.",
+    "Build a hybrid_fullstack app featuring a marketing landing page, studio browsing gallery, booking flow, user bookings view, and an admin dashboard.",
+    "Admin dashboard should follow the 'Control Room Grid' pattern, avoiding pure black backgrounds. Use dark gray (#121214) with subtle borders.",
+    "Integrate lucide-react for all icons, keeping them minimal and stroke-based.",
+    "Add data-testid attributes to all buttons, links, form inputs, and key UI elements."
+  ]
+}
